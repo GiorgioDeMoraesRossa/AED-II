@@ -24,7 +24,7 @@ int pushLista(SLista *pLista, element pElement, int nIndex){
     int nPos;
 
     if(pLista->pFirst == NULL && nIndex != 0){
-        printf("Index inválido.\n");
+        printf("Index invÃ¡lido.\n");
         return 0;
     }
 
@@ -216,17 +216,17 @@ Sfila *Reset(Sfila *pFila){
 zerar tamLista de ad --> CHECK
 ler os pesos das arestas --> CHECK
 dijkstra:
-  vetor visitados booleano (0 -> nao foi visitado, 1 -> foi visitado) --> CHECK
-  vetor d(distancia) que contem as distancias da origem até cada vértice --> CHECK
-  inicializa tudo como infinito e não visitado; --> CHECK
-  seta d[origem] = 0 e bota como visitado; --> CHECK
-  começa o algo(v = origem): --> CHECK
+  vetor d(distancia) que contem as distancias da origem atÃ© cada vÃ©rtice --> CHECK
+  vetor od que contem a origem --> CHECK
+  inicializa tudo como infinito --> CHECK
+  seta d[origem] = 0 --> CHECK
+  comeÃ§a o algo(v = origem): --> CHECK
     expande v ->    --> CHECK
-        pega todas as ligações e compara a menor distancia: --> CHECK
+        pega todas as ligaÃ§Ãµes e compara a menor distancia: --> CHECK
             vizinho = v.vizinhos;   --> CHECK
             j=0;    --> CHECK
             while(vizinho != null){ --> CHECK
-                Nó valores[] = (endVizinho, d[v] + custo(v,vizinho));   --> CHECK
+                NÃ³ valores[] = (endVizinho, d[v] + custo(v,vizinho));   --> CHECK
                 if(d[vizinho] > d[v] + custo(v,vizinho))    --> CHECK
                     d[vizinho] = d[v] + custo(v,vizinho));  --> CHECK
                 j++;    --> CHECK
@@ -235,7 +235,7 @@ dijkstra:
             for(i=0;i<j;i++){   --> CHECK
                 fila.insert(valores[i]);    --> CHECK
             }   --> CHECK
-            começa o algo de novo   --> CHECK
+            comeÃ§a o algo de novo   --> CHECK
 */
 
 
@@ -246,7 +246,7 @@ typedef struct Grafo{
 
 
 void dijkstra(Grafo g,int origem,int tam,int f){
-    int *visitados,i,*d,*od;//od é a origem da distancia, pra saber qual o caminho de verdade
+    int i,*d,*od;//od Ã© a origem da distancia, pra saber qual o caminho de verdade
     Sfila *pFila;
     pFila =(Sfila *) malloc(sizeof(Sfila));
      if(!pFila){
@@ -256,11 +256,9 @@ void dijkstra(Grafo g,int origem,int tam,int f){
     pFila->pFirst = NULL;
     pFila->pLast = NULL;
 
-    visitados = malloc(sizeof(int)*tam);
     d = malloc(sizeof(int)*tam);
     od = malloc(sizeof(int)*tam);
     for(i=0;i<tam;i++){
-        visitados[i] = 0;
         d[i] = 2147483646;
     }
     d[origem] = 0;
@@ -274,12 +272,11 @@ void dijkstra(Grafo g,int origem,int tam,int f){
         element *aux;
         dadoLista vetorPOrdenar[g.vertices[rPop.n].tamLista + 1],auxDado;
 
-        visitados[rPop.n] = 1;
         if(g.vertices[rPop.n].tamLista != -1){
             for(aux = g.vertices[rPop.n].listaAdj->pFirst; aux != NULL; aux = aux->pNext){ //percorre os vizinhos
                 vetorPOrdenar[i] = aux->dados;
                 i++;
-                if(d[aux->dados.dest] > d[rPop.n] + aux->dados.peso){ //aux representa uma aresta, destino é numero do vizinho, peso é peso(lol) da aresta(lol²)
+                if(d[aux->dados.dest] > d[rPop.n] + aux->dados.peso){ //aux representa uma aresta, destino Ã© numero do vizinho, peso Ã© peso(lol) da aresta(lolÂ²)
                     d[aux->dados.dest] = d[rPop.n] + aux->dados.peso;
                     od[aux->dados.dest] = rPop.n;
                 }
@@ -307,25 +304,28 @@ void dijkstra(Grafo g,int origem,int tam,int f){
     }
     //ja tem os menores valores em d
     printf("O custo do menor caminho do vertice %d ate o vertice %d e: %d.\n",origem,f,d[f]);
+    free(d);
+    free(od);
+    free(pFila);
 }
 
 int main()
 {
     int qVertices,i,qArestas,origem,destino,peso;
     Grafo g;
-    printf("Quantos vértices o grafo tem(max 20)?\n");
+    printf("Quantos vÃ©rtices o grafo tem(max 20)?\n");
     scanf("%d",&qVertices);
     g.vertices =  malloc(qVertices * sizeof(vertice));
 
     for(i=0;i<qVertices;i++){
-        g.vertices[i].tamLista = -1; //botando -1 eu sei que nao existe lista naquele vertice, só serao criadas listas que serão usadas
+        g.vertices[i].tamLista = -1; //botando -1 eu sei que nao existe lista naquele vertice, sÃ³ serao criadas listas que serÃ£o usadas
         g.vertices[i].n = i;
     }
     printf("Quantas arestas tem este grafo?\n");
     scanf("%d",&qArestas);
 
     for(i=0;i<qArestas;i++){
-        printf("Digite a origem da aresta, o destino e seu peso(o grafo começa pelo vértice 0 e vai até o vertice %d pesos não podem ser negativos)\n", qVertices-1);
+        printf("Digite a origem da aresta, o destino e seu peso(o grafo comeÃ§a pelo vÃ©rtice 0 e vai atÃ© o vertice %d pesos nÃ£o podem ser negativos)\n", qVertices-1);
         scanf("%d%d%d",&origem,&destino,&peso);
         dadoLista novoDado;
         novoDado.dest = destino;
@@ -348,7 +348,10 @@ int main()
 
 
     dijkstra(g,origem,qVertices,destino);
-    //free em toda a gurizada
-
+    for(i=0;i<qVertices;i++){
+        if(g.vertices[i].tamLista != -1)
+            free(g.vertices->listaAdj);
+    }
+    free(g.vertices);
     return 0;
 }

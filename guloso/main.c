@@ -129,7 +129,6 @@ while(1){
     menor = -1;
     dest = 0;
     flag = 0;
-
     for(i=0;i<vizinhos.length();i++){
         if(destino == vizinho[i].n){
             menor = vizinho[i];
@@ -142,7 +141,6 @@ while(1){
                 if(caminho[k] = vizinho[i].n){
                     break;
                 }
-
             }
             if(k == j){
                 menor = vizinho[i];
@@ -165,42 +163,71 @@ while(1){
 */
 
 void guloso(Grafo g,int origem, int tam,int destino){
-//RECONFIGURAR A LISTA PAR TRABALHAR COM VÉRTICES, ASSIM DA PRA ACHAR FACILMENTE O N E CONTINUAR NA LINHA 179
-    int custo = 0;
+    int j,i,flag,caminho[tam],custo = 0;
     vertice v = g.vertices[origem];
-    element backup[20];
+    j=1;
+    flag = 0;
+    caminho[0] = origem;
     while(1){
-        int dest,menor = -1;
+        int dest,k,menor = 2000000;
         element x;
-        for(i=0;i<v.tamLista;i++){
+        element backup[20];
+        caminho[j] = -1;
+        for(i=0;i<=v.tamLista;i++){
             popLista(v.listaAdj,&x,0);
             backup[i] = x;
 
-            if(destino == x.n){
-                menor = vizinho[i];
-                dest = i;
+            if(destino == x.dados.dest){
+                menor = x.dados.peso;
+                dest = x.dados.dest;
                 break;
             }
-            if(menor > vizinho[i]){
-                k=0;
+            if(menor > x.dados.peso){
                 for(k=0;k<j;k++){
-                    if(caminho[k] = vizinho[i].n){
+                    if(caminho[k] == x.dados.dest ){
                         break;
                     }
-
                 }
                 if(k == j){
-                    menor = vizinho[i];
-                    dest = i;
+                    menor = x.dados.peso;
+                    dest = x.dados.dest;
                 }
             }
         }
-        for(i=0;i<v.tamLista;i++){
-            pushLista(v.listaAdj,backup[i],0);
+        for(k=0;k<i;k++){
+            pushLista(v.listaAdj,backup[k],0);
         }
+
+        if(menor == 2000000){
+             flag = 1;
+             break;
+        }
+
+        if(i != v.tamLista+1){ //se quebrou antes é pq chegou no destino
+
+            caminho[j] = dest;
+            custo = custo + menor;
+            j++;
+            break;
+        }
+
+        caminho[j] = dest;
+        custo = custo + menor;
+        v = g.vertices[dest];
+        j++;
+    }
+    //erro no caminho -> não existe solução gulosa
+    if(flag == 1){
+        printf("Não existe solução gulosa para o caminho de %d ate %d\n",origem,destino);
+        return;
     }
 
-
+    //achei o caminho
+    printf("O caminho encontrdo de forma gulosa foi:\n");
+    for(i=0;i<j;i++){
+        printf("%d ",caminho[i]);
+    }
+    printf("\nE seu custo foi de: %d\n",custo);
 
 }
 
@@ -234,6 +261,15 @@ int main()
         }
         g.vertices[origem].tamLista = g.vertices[origem].tamLista + 1;
         pushLista(g.vertices[origem].listaAdj,novoEle,0);
+
+        if(g.vertices[destino].tamLista == -1){
+            g.vertices[destino].listaAdj = malloc(sizeof(SLista));
+            g.vertices[destino].listaAdj->pFirst = NULL;
+        }
+        g.vertices[destino].tamLista = g.vertices[destino].tamLista + 1;
+        pushLista(g.vertices[destino].listaAdj,novoEle,0);
+
+
     }
     printf("Digite o vertice de origem\n");
     scanf("%d",&origem);
@@ -242,7 +278,7 @@ int main()
     scanf("%d",&destino);
 
 
-    guloso(g,origem,qVertices,destino);
+    guloso(g,origem,qArestas,destino);
 
     for(i=0;i<qVertices;i++){
         if(g.vertices[i].tamLista != -1)
